@@ -65,7 +65,7 @@ def _append_tsv(log_path: Path, record: IterationRecord) -> None:
 def improve(
     code: str,
     blueprint: AppBlueprint,
-    max_iterations: int = 5,
+    max_iterations: int = 0,
     log_path: Path | None = None,
 ) -> tuple[str, list[IterationRecord]]:
     """
@@ -109,9 +109,11 @@ def improve(
     # ── Improvement loop ─────────────────────────────────────────────────────
     current_code = code
     consecutive_no_op = 0
+    i = 1
 
-    for i in range(1, max_iterations + 1):
-        console.rule(f"Iteration {i}/{max_iterations}")
+    while max_iterations <= 0 or i <= max_iterations:
+        limit_str = f"/{max_iterations}" if max_iterations > 0 else ""
+        console.rule(f"Iteration {i}{limit_str}")
 
         # Phase 1: Review
         result = validate(current_code, blueprint)
@@ -177,6 +179,8 @@ def improve(
             console.print("[green]✓ All validation checks pass.[/green]")
             best_code = current_code
             break
+
+        i += 1
 
     return best_code, records
 

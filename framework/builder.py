@@ -15,7 +15,7 @@ console = Console()
 async def build_app(
     request: str,
     output_dir: Path = Path("generated"),
-    max_iterations: int = 5,
+    max_iterations: int = 0,
 ) -> Path:
     """
     Full pipeline:

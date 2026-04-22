@@ -25,8 +25,8 @@ def main():
               help="Read request from a file")
 @click.option("--output-dir", "-o", default="generated", show_default=True,
               help="Directory to write the generated app")
-@click.option("--iterations", "-n", default=5, show_default=True,
-              help="Max autoresearch improvement iterations")
+@click.option("--iterations", "-n", default=0, show_default=True,
+              help="Max autoresearch improvement iterations (0 = unlimited)")
 def build(request: str | None, request_file: str | None, output_dir: str, iterations: int):
     """Build a yggdrasil app from a natural language REQUEST.
 
