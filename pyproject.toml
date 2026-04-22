@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "y-autoresearch"
+version = "0.1.0"
+description = "Build yggdrasil-powered AI apps from natural language using autoresearch-style iteration"
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=0.40.0",
+    "pydantic>=2.0",
+    "click>=8.1",
+    "rich>=13.0",
+    "python-dotenv>=1.0",
+    "yggdrasil @ git+https://github.com/hoangdao1/yggdrasil.git",
+]
+
+[project.scripts]
+ygg-build = "cli:main"
+
+[tool.ruff]
+line-length = 100

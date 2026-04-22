@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+.venv/
+venv/
+generated/*.py
+generated/*.tsv
+autoresearch-results.tsv
