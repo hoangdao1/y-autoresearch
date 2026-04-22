@@ -15,13 +15,17 @@ from .validator import validate
 console = Console()
 
 
-def _ask_claude_to_fix(code: str, result: ValidationResult) -> str:
-    """Call Claude with the broken code + errors, get back fixed code."""
+def _ask_claude_to_fix(code: str, result: ValidationResult, history: list[str]) -> str:
+    """Call Claude with the broken code + errors + fix history, get back fixed code."""
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
     error_text = "\n".join(result.errors)
     warning_text = "\n".join(result.warnings)
     issues = f"Errors:\n{error_text or 'none'}\n\nWarnings:\n{warning_text or 'none'}"
+
+    history_section = ""
+    if history:
+        history_section = "## What was already tried (do not repeat these)\n" + "\n".join(history) + "\n\n"
 
     message = client.messages.create(
         model="claude-opus-4-7",
@@ -33,6 +37,7 @@ def _ask_claude_to_fix(code: str, result: ValidationResult) -> str:
                 "content": (
                     f"Fix this Yggdrasil app code.\n\n"
                     f"## Validation issues\n{issues}\n\n"
+                    f"{history_section}"
                     f"## Current code\n```python\n{code}\n```\n\n"
                     "Return only the corrected Python file."
                 ),
@@ -109,6 +114,7 @@ def improve(
     # ── Improvement loop ─────────────────────────────────────────────────────
     current_code = code
     consecutive_no_op = 0
+    fix_history: list[str] = []
     i = 1
 
     while max_iterations <= 0 or i <= max_iterations:
@@ -134,7 +140,7 @@ def improve(
         # Phase 2: Fix
         console.print(f"Score={result.score:.3f} — asking Claude to fix {len(result.errors)} error(s)…")
         start = time.time()
-        fixed_code = _ask_claude_to_fix(current_code, result)
+        fixed_code = _ask_claude_to_fix(current_code, result, fix_history)
         elapsed = time.time() - start
 
         # Phase 3: Re-validate
@@ -157,6 +163,9 @@ def improve(
         else:
             status = "discard"
             description = f"Score did not improve ({result.score:.3f} → {new_result.score:.3f})"
+
+        errors_summary = "; ".join(result.errors[:3]) or "none"
+        fix_history.append(f"- Iter {i} [{status}]: errors were [{errors_summary}] → {description}")
 
         record = IterationRecord(
             iteration=i,
