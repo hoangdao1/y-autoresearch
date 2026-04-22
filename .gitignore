@@ -5,6 +5,5 @@ __pycache__/
 dist/
 .venv/
 venv/
-generated/*.py
-generated/*.tsv
+generated/
 autoresearch-results.tsv

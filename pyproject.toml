@@ -13,7 +13,7 @@ dependencies = [
     "click>=8.1",
     "rich>=13.0",
     "python-dotenv>=1.0",
-    "yggdrasil @ git+https://github.com/hoangdao1/yggdrasil.git",
+    "yggdrasil-lm",
 ]
 
 [project.scripts]
